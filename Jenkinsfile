@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Coverage') {
           steps {
-            cobertura(coberturaReportFile: 'file location: target/site/cobertura/coverage.xml')
+            cobertura(coberturaReportFile: 'target/site/cobertura/coverage.xml')
           }
         }
       }
