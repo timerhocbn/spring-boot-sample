@@ -8,7 +8,7 @@ pipeline {
     }
     stage('test') {
       steps {
-        sh 'mvn cobertura:cobertura test'
+        sh 'docker run -v `pwd`:/app -v $HOME/.m2:/root/.m2 -w /app localhost:5000/maven mvn cobertura:cobertura test'
       }
     }
     stage('report') {
@@ -27,7 +27,7 @@ pipeline {
     }
     stage('package') {
       steps {
-        sh 'mvn package'
+        sh 'docker run -v `pwd`:/app -v  $HOME/.m2:/root/.m2 -w /app -p 8800:8000 localhost:5000/maven mvn package'
       }
     }
     stage('archive') {
@@ -36,18 +36,18 @@ pipeline {
       }
     }
     stage('wait for confirm') {
-        input {
-            message "Should we deploy?"
-            ok "Yes, we should."
-            submitter "admin"
-            parameters {
-                string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-            }
+      input {
+        message 'Should we deploy?'
+        id 'Yes, we should.'
+        submitter 'admin'
+        parameters {
+          string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
         }
-        steps {
-            echo "Hello, ${PERSON}, nice to meet you."
-        }
-    }  
+      }
+      steps {
+        echo "Hello, ${PERSON}, nice to meet you."
+      }
+    }
     stage('deploy') {
       steps {
         sh 'make deploy-default'
